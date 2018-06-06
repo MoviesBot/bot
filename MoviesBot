@@ -1,0 +1,591 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Simple Bot to reply to Telegram messages
+# This program is dedicated to the public domain under the CC0 license.
+"""
+This Bot uses the Updater class to handle the bot.
+
+First, a few callback functions are defined. Then, those functions are passed to
+the Dispatcher and registered at their respective places.
+Then, the bot is started and runs until we press Ctrl-C on the command line.
+
+Usage:
+Example of a bot-user conversation using ConversationHandler.
+Send /start to initiate the conversation.
+Press Ctrl-C on the command line or send a signal to the process to stop the
+bot.
+"""
+
+#IMPORTAÇÃO DAS BIBLIOTECAS
+import telegram
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler,
+                          ConversationHandler)
+import logging
+
+# HABILITANADO LOGGING 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+
+#FUNÇÕES
+ANO, CATEGORIA2016, CATEGORIA2017, CATEGORIA2018, RETURN, COMECO = range(6)
+
+#FUNÇÃO DE INICIO DO BOT
+#PERGUNTA QUAL O ANO
+#RETORNA PARA FUNÇÃO ANO
+def start(bot, update):
+    reply_keyboard = [['2016', '2017', '2018']]
+
+    update.message.reply_text(
+        'Olá! Eu sou o OscarBOT.\n\n'
+        'Envie /cancel para encerrar.\n\n'
+        'De qual ano gostaria de ter informações sobre o Oscar?',
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+
+    return ANO
+
+#FUNÇÃO ANO -> RECEBE O ANO DA FUNÇÃO START
+#PERGUNTA QUAL A CATEGORIA
+#RETORNA PARA FUNÇÃO CATEGORIA DO ANO SELECIONADO
+def ano(bot, update):
+    user = update.message.from_user
+    logger.info("Ano de %s: %s", user.first_name, update.message.text)
+    #reply_keyboard = [['Melhor Filme', 'Melhor Ator', 'Melhor Atriz', 'Melhor Diretor', 'Melhor Canção Original', 'Melhor Trilha Sonora']]
+    update.message.reply_text('OK!\n'
+                              'Sobre qual categoria gostaria de saber?\n'
+                              '/MelhorFilme\n'
+                              '/MelhorAtor\n'
+                              '/MelhorAtriz\n'
+                              '/MelhorDiretor\n'
+                              '/MelhorCancaoOriginal\n'
+                              '/MelhorTrilhaSonora\n'
+                              '/MelhorFilmeLinguaEstrangeira\n'
+                              '/MelhorCurtaLiveAction\n'
+                              '/MelhorDocumentario\n'
+                              '/MelhorDocumentarioCurtaMetragem\n'
+                              '/MelhorAtorCoadjuvante\n'
+                              '/MelhorAnimacao\n'
+                              '/MelhorCurtaAnimacao\n'
+                              '/MelhorEfeitoVisual\n'
+                              '/MelhorMixagemSom\n'
+                              '/MelhorEdicaoSom\n'
+                              '/MelhorMontagem\n'
+                              '/MelhorFotografia\n'
+                              '/MelhorCabeloMaquiagem\n'
+                              '/MelhorDesignProducao\n'
+                              '/MelhorFigurino\n'
+                              '/MelhorAtrizCoadjuvante\n'
+                              '/MelhorRoteiroAdaptado\n'
+                              '/MelhorRoteiroOriginal\n',
+                              reply_markup=ReplyKeyboardRemove())
+
+    if (update.message.text=='2016'):
+        return CATEGORIA2016
+    elif (update.message.text=='2017'):
+        return CATEGORIA2017
+    else:
+        return CATEGORIA2018
+
+#FUNÇÃO CATEGORIA2016 -> RECEBE A CATEGORIA DA FUNÇÃO ANO
+#RESPONDE
+#RETORNA PARA A FUNÇÃO RETURN
+def categoria2016(bot, update):
+    reply_keyboard = [['SIM', 'NÃO']]
+    user = update.message.from_user
+    logger.info("Categoria de %s: %s", user.first_name, update.message.text)
+    if (update.message.text=='/MelhorFilme'):
+        update.message.reply_text('O Oscar de Melhor Filme foi para:\n\nSpotlight: Segredos revelados\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1895587/?ref_=fn_al_tt_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtor'):
+        update.message.reply_text('O Oscar de Melhor Ator foi para:\n\nLeonardo DiCaprio ("O Regresso")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1663202/?ref_=nv_sr_2',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtriz'):
+        update.message.reply_text('O Oscar de Melhor Atriz foi para:\n\nBrie Larsson ("O quarto de Jack")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3170832/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='//MelhorDiretor'):
+        update.message.reply_text('O Oscar de Melhor Diretor foi para:\n\nAlejandro G. Iñárritu ("O regresso")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1663202/?ref_=nv_sr_2',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCancaoOriginal'):
+        update.message.reply_text('O Oscar de Melhor Canção Original foi para:\n\nWritings on the wall, Sam Smith ("007 contra Spectre")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2379713/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorTrilhaSonora'):
+        update.message.reply_text('O Oscar de Melhor Trilha Sonora foi para:\n\n"Os 8 odiados"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3460252/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFilmeLinguaEstrangeira'):
+        update.message.reply_text('O Oscar de Melhor Filme em Língua Estrangeira foi para:\n\n"O filho de Saul" (Hungria)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3808342/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaLiveAction'):
+        update.message.reply_text('O Oscar de Melhor Curta de Live Action foi para:\n\n"Stutterer"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4817576/?ref_=tt_rec_tt',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentario'):
+        update.message.reply_text('O Oscar de Melhor Documentário foi para:\n\n"Amy"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2870648/?ref_=ttawd_awd_tt',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentarioCurtaMetragem'):
+        update.message.reply_text('O Oscar de Melhor Documentário de Curta-Metragem foi para:\n\n"A Girl in the River: The Price of forgiveness"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5144072/',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtorCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Ator Coadjuvante foi para:\n\nMark Rylance ("Ponte dos espiões")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3682448/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Animação foi para:\n\n"Divertida mente"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2096673/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Curta de Animação foi para:\n\n"Bear Story"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3829254/',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEfeitoVisual'):
+        update.message.reply_text('O Oscar de Melhor Efeitos Visuais foi para:\n\n"Ex Machina"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt0470752/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMixagemSom'):
+        update.message.reply_text('O Oscar de Melhor Mixagem de Som foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEdicaoSom'):
+        update.message.reply_text('O Oscar de Melhor Edição de Som foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMontagem'):
+        update.message.reply_text('O Oscar de Melhor Montagem foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFotografia'):
+        update.message.reply_text('O Oscar de Melhor Fotografia foi para:\n\n"O regresso"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1663202/?ref_=nv_sr_2',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCabeloMaquiagem'):
+        update.message.reply_text('O Oscar de Melhor Cabelo e Maquiagem foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDesignProducao'):
+        update.message.reply_text('O Oscar de Melhor Design de Produção foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFigurino'):
+        update.message.reply_text('O Oscar de Melhor Figurino foi para:\n\n"Mad Max: Estrada da Fúria"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1392190/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtrizCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Atriz Coadjuvante foi para:\n\nAlicia Vikander ("A garota dinamarquesa")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt0810819/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroAdaptado'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Adaptado foi para:\n\n"A grande aposta"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1596363/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroOriginal'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Original foi para:\n\n"Spotlight - Segredos revelados"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1895587/?ref_=fn_al_tt_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    
+
+    return COMECO
+
+#FUNÇÃO CATEGORIA2017 -> RECEBE A CATEGORIA DA FUNÇÃO ANO
+#RESPONDE
+#RETORNA PARA A FUNÇÃO RETURN
+def categoria2017(bot, update):
+    reply_keyboard = [['SIM', 'NÃO']]
+    user = update.message.from_user
+    logger.info("Categoria de %s: %s", user.first_name, update.message.text)
+    if (update.message.text=='/MelhorFilme'):
+        update.message.reply_text('O Oscar de Melhor Filme foi para:\n\nMoonlight: Sob a luz do luar\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4975722/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtor'):
+        update.message.reply_text('O Oscar de Melhor Ator foi para:\n\nCasey Affleck (“Manchester a beira mar”)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4034228/?ref_=fn_al_tt_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtriz'):
+        update.message.reply_text('O Oscar de Melhor Atriz foi para:\n\nEmma Stone ("La La Land - Cantando estações")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='//MelhorDiretor'):
+        update.message.reply_text('O Oscar de Melhor Diretor foi para:\n\nDamien Chazelle ("La la land: Cantando estações")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCancaoOriginal'):
+        update.message.reply_text('O Oscar de Melhor Canção Original foi para:\n\n"City of stars" ("La la land: Cantando estações"); música de Justin Hurwitz e letra de Benj Pasek e Justin Paul\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorTrilhaSonora'):
+        update.message.reply_text('O Oscar de Melhor Trilha Sonora foi para:\n\nJustin Hurwitz ("La la land: Cantando estações")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFilmeLinguaEstrangeira'):
+        update.message.reply_text('O Oscar de Melhor Filme em Língua Estrangeira foi para:\n\n"O apartamento" – Irã\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5186714/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaLiveAction'):
+        update.message.reply_text('O Oscar de Melhor Curta de Live Action foi para:\n\n"Sing"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3470600/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentario'):
+        update.message.reply_text('O Oscar de Melhor Documentário foi para:\n\n"O.J. Made in America"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5275892/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentarioCurtaMetragem'):
+        update.message.reply_text('O Oscar de Melhor Documentário de Curta-Metragem foi para:\n\n"The white helmets"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt6073176/?ref_=tt_rec_tt',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtorCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Ator Coadjuvante foi para:\n\nMahershala Ali ("Moonlight: Sob a luz do luar")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4975722/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Animação foi para:\n\n"Zootopia"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2948356/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Curta de Animação foi para:\n\n"Piper"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5613056/',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEfeitoVisual'):
+        update.message.reply_text('O Oscar de Melhor Efeitos Visuais foi para:\n\nRobert Legato, Adam Valdez, Andrew R. Jones and Dan Lemmon ("Mogli: O menino lobo")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3040964/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMixagemSom'):
+        update.message.reply_text('O Oscar de Melhor Mixagem de Som foi para:\n\nKevin OConnell, Andy Wright, Robert Mackenzie e Peter Grace ("Até o último homem")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2119532/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEdicaoSom'):
+        update.message.reply_text('O Oscar de Melhor Edição de Som foi para:\n\nSylvain Bellemare ("A chegada")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2543164/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMontagem'):
+        update.message.reply_text('O Oscar de Melhor Montagem foi para:\n\nJohn Gilbert ("Até o último homem")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2119532/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFotografia'):
+        update.message.reply_text('O Oscar de Melhor Fotografia foi para:\n\nLinus Sandgren ("La la land: Cantando estações")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCabeloMaquiagem'):
+        update.message.reply_text('O Oscar de Melhor Cabelo e Maquiagem foi para:\n\nAlessandro Bertolazzi, Giorgio Gregorini e Christopher Nelson ("Esquadrão Suicida")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1386697/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDesignProducao'):
+        update.message.reply_text('O Oscar de Melhor Design de Produção foi para:\n\n"La la land: Cantando estações"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3783958/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFigurino'):
+        update.message.reply_text('O Oscar de Melhor Figurino foi para:\n\nColleen Atwood ("Animais fantásticos e onde habitam")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt3183660/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtrizCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Atriz Coadjuvante foi para:\n\nViola Davis ("Um limite entre nós")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2671706/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroAdaptado'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Adaptado foi para:\n\nBarry Jenkins ("Moonlight: Sob a luz do luar")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4975722/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroOriginal'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Original foi para:\n\nKenneth Lonergan ("Manchester à beira-mar")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4034228/?ref_=fn_al_tt_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    
+
+    return COMECO
+
+#FUNÇÃO CATEGORIA2018 -> RECEBE A CATEGORIA DA FUNÇÃO ANO
+#RESPONDE
+#RETORNA PARA A FUNÇÃO RETURN
+def categoria2018(bot, update):
+    reply_keyboard = [['SIM', 'NÃO']]
+    user = update.message.from_user
+    logger.info("Categoria de %s: %s", user.first_name, update.message.text)
+    if (update.message.text=='/MelhorFilme'):
+        update.message.reply_text('O Oscar de Melhor Filme foi para:\n\n"A forma da água"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5580390/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtor'):
+        update.message.reply_text('O Oscar de Melhor Ator foi para:\n\nGary Oldman ("O destino de uma nação")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4555426/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtriz'):
+        update.message.reply_text('O Oscar de Melhor Atriz foi para:\n\nFrances McDormand ("Três anúncios para um crime")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5027774/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='//MelhorDiretor'):
+        update.message.reply_text('O Oscar de Melhor Diretor foi para:\n\nGuillermo del Toro ("A forma da água")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5580390/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCancaoOriginal'):
+        update.message.reply_text('O Oscar de Melhor Canção Original foi para:\n\n"Remember me" ("Viva - A vida é uma festa")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2380307/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorTrilhaSonora'):
+        update.message.reply_text('O Oscar de Melhor Trilha Sonora foi para:\n\n"A forma da água"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5580390/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFilmeLinguaEstrangeira'):
+        update.message.reply_text('O Oscar de Melhor Filme em Língua Estrangeira foi para:\n\n"Uma Mulher Fantástica" (Chile)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5639354/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaLiveAction'):
+        update.message.reply_text('O Oscar de Melhor Curta de Live Action foi para:\n\n"The silent child"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt6186970/',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentario'):
+        update.message.reply_text('O Oscar de Melhor Documentário foi para:\n\n"Ícaro"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt6333060/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDocumentarioCurtaMetragem'):
+        update.message.reply_text('O Oscar de Melhor Documentário de Curta-Metragem foi para:\n\n"Heaven is a traffic jam on the 405"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5095260/?ref_=fn_al_tt_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtorCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Ator Coadjuvante foi para:\n\nSam Rockwell ("Três anúncios para um crime")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5027774/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Animação foi para:\n\n"Viva: A vida é uma festa"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt2380307/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCurtaAnimacao'):
+        update.message.reply_text('O Oscar de Melhor Curta de Animação foi para:\n\n“Dear Basketball”\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt6794476/',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEfeitoVisual'):
+        update.message.reply_text('O Oscar de Melhor Efeitos Visuais foi para:\n\n"Blade Runner 2049"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1856101/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMixagemSom'):
+        update.message.reply_text('O Oscar de Melhor Mixagem de Som foi para:\n\n"Dunkirk"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5013056/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorEdicaoSom'):
+        update.message.reply_text('O Oscar de Melhor Edição de Som foi para:\n\n"Dunkirk"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5013056/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorMontagem'):
+        update.message.reply_text('O Oscar de Melhor Montagem foi para:\n\n"Dunkirk"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5013056/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFotografia'):
+        update.message.reply_text('O Oscar de Melhor Fotografia foi para:\n\n“Blade Runner 2049” (Roger Deakins)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt1856101/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorCabeloMaquiagem'):
+        update.message.reply_text('O Oscar de Melhor Cabelo e Maquiagem foi para:\n\n"O destino de uma nação"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt4555426/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorDesignProducao'):
+        update.message.reply_text('O Oscar de Melhor Design de Produção foi para:\n\n“A forma da água"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5580390/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorFigurino'):
+        update.message.reply_text('O Oscar de Melhor Figurino foi para:\n\n"Trama Fantasma"\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5776858/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorAtrizCoadjuvante'):
+        update.message.reply_text('O Oscar de Melhor Atriz Coadjuvante foi para:\n\nAllison Janney ("Eu, Tonya")\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5580036/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroAdaptado'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Adaptado foi para:\n\n"Me chame pelo seu nome" (James Ivory)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5726616/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    elif (update.message.text=='/MelhorRoteiroOriginal'):
+        update.message.reply_text('O Oscar de Melhor Roteiro Original foi para:\n\n"Corra!" (Jordan Peele)\n\nGostaria de saber sobre alguma outra premiação?'
+                                  '\n\nhttps://www.imdb.com/title/tt5052448/?ref_=nv_sr_1',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+    
+
+    return COMECO
+
+#FUNÇÃO RETURN -> NÃO RECEBE NADA
+#PERGUNTA SE IRÁ CONTINUAR
+#RETORNA PARA A FUNÇÃO COMECO
+def retorno(bot, update):
+    reply_keyboard = [['SIM', 'NÃO']]
+    user = update.message.from_user
+    update.message.reply_text(
+        'Gostaria de saber sobre alguma outra premiação?',
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+
+    return  COMECO
+
+#FUNÇÃO COMECO -> RECEBE SE IRÁ CONTINUAR OU NÃO
+#SE CONTINUAR PERGUNTA O ANO
+##RETORNA PARA A FUNÇÃO ANO
+#SENÃO 
+##RETORNA PARA A CANCEL
+def comeco(bot, update):
+    if (update.message.text=='SIM'):
+        reply_keyboard = [['2016', '2017', '2018']]
+
+        update.message.reply_text(
+            'De qual ano gostaria de ter informações sobre o Oscar?',
+            reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True))
+
+        return  ANO
+    else:
+        user = update.message.from_user
+        logger.info("Usuário %s cancelou a conversa.", user.first_name)
+        update.message.reply_text('Até logo! Vamos conversar novamente um dia.',
+                                  reply_markup=ReplyKeyboardRemove())
+
+        return ConversationHandler.END
+
+#FUNÇAO CANCEL
+#ENCERRA O BOT
+def cancel(bot, update):
+    user = update.message.from_user
+    logger.info("Usuário %s cancelou a conversa.", user.first_name)
+    update.message.reply_text('Até logo! Vamos conversar novamente um dia.',
+                              reply_markup=ReplyKeyboardRemove())
+
+    return ConversationHandler.END
+
+#FUNÇÃO DE ERRO
+def error(bot, update, error):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, error)
+
+#FUNÇÃO MAIN
+def main():
+    # Create the EventHandler and pass it your bot's token.
+    updater = Updater("412610359:AAE--h4MY922xwA0g6hFYYCdh5E_9y5XnR4")
+    
+    # get the first pending update_id, this is so we can skip over it in case
+    # we get an "Unauthorized" exception.
+    try:
+        #update_id = bot.get_updates()[0].update_id
+        update_id = telegram.bot.Message.chat_id
+        #update_id = '338019251'
+    except IndexError:
+        update_id = None
+
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # Add conversation handler with the states CATEGORIA, PHOTO, LOCATION and BIO
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+
+        states={
+            ANO: [RegexHandler('^(2016|2017|2018)$', ano)],
+
+            #CATEGORIA2016: [RegexHandler('^(Melhor Filme|Melhor Ator|Melhor Atriz|Melhor Diretor|Melhor Canção Original|Melhor Trilha Sonora)$', categoria2016)],
+            #CATEGORIA2017: [RegexHandler('^(Melhor Filme|Melhor Ator|Melhor Atriz|Melhor Diretor|Melhor Canção Original|Melhor Trilha Sonora)$', categoria2017)],
+            #CATEGORIA2018: [RegexHandler('^(Melhor Filme|Melhor Ator|Melhor Atriz|Melhor Diretor|Melhor Canção Original|Melhor Trilha Sonora)$', categoria2018)],
+            
+            CATEGORIA2016: [CommandHandler('MelhorFilme', categoria2016),
+                            CommandHandler('MelhorAtor', categoria2016),
+                            CommandHandler('MelhorAtriz', categoria2016),
+                            CommandHandler('MelhorDiretor', categoria2016),
+                            CommandHandler('MelhorCancaoOriginal', categoria2016),
+                            CommandHandler('MelhorTrilhaSonora', categoria2016),
+                            CommandHandler('MelhorFilmeLinguaEstrangeira', categoria2016),
+                            CommandHandler('MelhorCurtaLiveAction', categoria2016),
+                            CommandHandler('MelhorDocumentario', categoria2016),
+                            CommandHandler('MelhorDocumentarioCurtaMetragem', categoria2016),
+                            CommandHandler('MelhorAtorCoadjuvante', categoria2016),
+                            CommandHandler('MelhorAnimacao', categoria2016),
+                            CommandHandler('MelhorCurtaAnimacao', categoria2016),
+                            CommandHandler('MelhorEfeitoVisual', categoria2016),
+                            CommandHandler('MelhorMixagemSom', categoria2016),
+                            CommandHandler('MelhorEdicaoSom', categoria2016),
+                            CommandHandler('MelhorMontagem', categoria2016),
+                            CommandHandler('MelhorFotografia', categoria2016),
+                            CommandHandler('MelhorCabeloMaquiagem', categoria2016),
+                            CommandHandler('MelhorDesignProducao', categoria2016),
+                            CommandHandler('MelhorFigurino', categoria2016),
+                            CommandHandler('MelhorAtrizCoadjuvante', categoria2016),
+                            CommandHandler('MelhorRoteiroAdaptado', categoria2016),
+                            CommandHandler('MelhorRoteiroOriginal', categoria2016)],
+
+            CATEGORIA2017: [CommandHandler('MelhorFilme', categoria2017),
+                            CommandHandler('MelhorAtor', categoria2017),
+                            CommandHandler('MelhorAtriz', categoria2017),
+                            CommandHandler('MelhorDiretor', categoria2017),
+                            CommandHandler('MelhorCancaoOriginal', categoria2017),
+                            CommandHandler('MelhorTrilhaSonora', categoria2017),
+                            CommandHandler('MelhorFilmeLinguaEstrangeira', categoria2017),
+                            CommandHandler('MelhorCurtaLiveAction', categoria2017),
+                            CommandHandler('MelhorDocumentario', categoria2017),
+                            CommandHandler('MelhorDocumentarioCurtaMetragem', categoria2017),
+                            CommandHandler('MelhorAtorCoadjuvante', categoria2017),
+                            CommandHandler('MelhorAnimacao', categoria2017),
+                            CommandHandler('MelhorCurtaAnimacao', categoria2017),
+                            CommandHandler('MelhorEfeitoVisual', categoria2017),
+                            CommandHandler('MelhorMixagemSom', categoria2017),
+                            CommandHandler('MelhorEdicaoSom', categoria2017),
+                            CommandHandler('MelhorMontagem', categoria2017),
+                            CommandHandler('MelhorFotografia', categoria2017),
+                            CommandHandler('MelhorCabeloMaquiagem', categoria2017),
+                            CommandHandler('MelhorDesignProducao', categoria2017),
+                            CommandHandler('MelhorFigurino', categoria2017),
+                            CommandHandler('MelhorAtrizCoadjuvante', categoria2017),
+                            CommandHandler('MelhorRoteiroAdaptado', categoria2017),
+                            CommandHandler('MelhorRoteiroOriginal', categoria2017)],
+
+            CATEGORIA2018: [CommandHandler('MelhorFilme', categoria2018),
+                            CommandHandler('MelhorAtor', categoria2018),
+                            CommandHandler('MelhorAtriz', categoria2018),
+                            CommandHandler('MelhorDiretor', categoria2018),
+                            CommandHandler('MelhorCancaoOriginal', categoria2018),
+                            CommandHandler('MelhorTrilhaSonora', categoria2018),
+                            CommandHandler('MelhorFilmeLinguaEstrangeira', categoria2018),
+                            CommandHandler('MelhorCurtaLiveAction', categoria2018),
+                            CommandHandler('MelhorDocumentario', categoria2018),
+                            CommandHandler('MelhorDocumentarioCurtaMetragem', categoria2018),
+                            CommandHandler('MelhorAtorCoadjuvante', categoria2018),
+                            CommandHandler('MelhorAnimacao', categoria2018),
+                            CommandHandler('MelhorCurtaAnimacao', categoria2018),
+                            CommandHandler('MelhorEfeitoVisual', categoria2018),
+                            CommandHandler('MelhorMixagemSom', categoria2018),
+                            CommandHandler('MelhorEdicaoSom', categoria2018),
+                            CommandHandler('MelhorMontagem', categoria2018),
+                            CommandHandler('MelhorFotografia', categoria2018),
+                            CommandHandler('MelhorCabeloMaquiagem', categoria2018),
+                            CommandHandler('MelhorDesignProducao', categoria2018),
+                            CommandHandler('MelhorFigurino', categoria2018),
+                            CommandHandler('MelhorAtrizCoadjuvante', categoria2018),
+                            CommandHandler('MelhorRoteiroAdaptado', categoria2018),
+                            CommandHandler('MelhorRoteiroOriginal', categoria2018)],
+
+            RETURN: [RegexHandler(Filters.text, retorno)],
+
+            COMECO: [RegexHandler('^(SIM|NÃO)$', comeco)]
+        },
+
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    dp.add_handler(conv_handler)
+
+    # log all errors
+    dp.add_error_handler(error)
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
