@@ -462,7 +462,7 @@ def error(bot, update, error):
 #FUNÇÃO MAIN
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("412610359:AAE--h4MY922xwA0g6hFYYCdh5E_9y5XnR4")
+    updater = Updater("TOKEN")
     
     # get the first pending update_id, this is so we can skip over it in case
     # we get an "Unauthorized" exception.
